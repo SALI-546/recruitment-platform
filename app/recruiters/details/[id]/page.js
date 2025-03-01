@@ -1,6 +1,6 @@
 'use client';
 
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setCandidates, setSelectedCandidate } from '../../../../redux/candidateSlice';
 import { Descriptions, Button, message } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -27,23 +27,25 @@ export default function CandidateDetails({ params }) {
   const [candidate, setCandidate] = useState(null);
 
   useEffect(() => {
+    
     const fetchCandidateData = async () => {
       const savedCandidates = loadStateFromLocalStorage();
       dispatch(setCandidates(savedCandidates));
 
-      // Utilisez React.use() pour attendre que params.id soit disponible
-      const candidateId = await params.id; // Assurez-vous que params.id est résolu avant de l'utiliser
+      
+      const candidateId = await params.id; 
+
       const selected = savedCandidates.find((c) => c.id === candidateId);
       if (selected) {
         dispatch(setSelectedCandidate(selected));
-        setCandidate(selected); // Mettre à jour l'état avec le candidat sélectionné
+        setCandidate(selected);
       } else {
         message.error(t('candidate_not_found'));
       }
     };
 
-    fetchCandidateData(); // Appeler la fonction asynchrone
-  }, [dispatch, params, t]); // Ajout de params pour garantir que les mises à jour sont prises en compte
+    fetchCandidateData();
+  }, [dispatch, params, t]);
 
   if (!candidate) return <p>{t('candidate_not_found')}</p>;
 

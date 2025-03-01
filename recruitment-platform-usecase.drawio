@@ -1,0 +1,47 @@
+<mxfile host="app.diagrams.net" modified="2025-03-01T12:00:00.000Z" agent="Grok" version="1.0" etag="xyz789" type="diagram">
+  <diagram id="diagram_2" name="Recruitment Platform Use Case">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <!-- System Boundary (Recruitment Platform) -->
+        <mxCell id="2" value="Recruitment Platform" style="shape=swimlane;startSize=30;rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="300" y="150" width="300" height="300" as="geometry" />
+        </mxCell>
+        <!-- Use Case: Soumettre une candidature -->
+        <mxCell id="3" value="Soumettre une candidature" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="2">
+          <mxGeometry x="100" y="80" width="120" height="80" as="geometry" />
+        </mxCell>
+        <!-- Use Case: Consulter la liste des candidats -->
+        <mxCell id="4" value="Consulter la liste des candidats" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="2">
+          <mxGeometry x="100" y="180" width="120" height="80" as="geometry" />
+        </mxCell>
+        <!-- Use Case: Voir les détails d’un candidat -->
+        <mxCell id="5" value="Voir les détails d’un candidat" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="2">
+          <mxGeometry x="100" y="280" width="120" height="80" as="geometry" />
+        </mxCell>
+        <!-- Actor: Candidat -->
+        <mxCell id="6" value="Candidat" style="shape=actor;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="150" y="200" width="60" height="100" as="geometry" />
+        </mxCell>
+        <!-- Actor: Recruteur -->
+        <mxCell id="7" value="Recruteur" style="shape=actor;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="650" y="200" width="60" height="100" as="geometry" />
+        </mxCell>
+        <!-- Connections -->
+        <!-- Candidat --> Soumettre une candidature -->
+        <mxCell id="8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="6" target="3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- Recruteur --> Consulter la liste des candidats -->
+        <mxCell id="9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="7" target="4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- Recruteur --> Voir les détails d’un candidat -->
+        <mxCell id="10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="7" target="5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

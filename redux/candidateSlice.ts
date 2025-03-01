@@ -1,20 +1,20 @@
+// redux/candidateSlice.js
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-// Définissez les types pour l'état
-interface Candidate {
+export interface Candidate {
   id: string;
   name: string;
   email: string;
   phone: string;
   address?: string;
   position: string;
-  availability?: string;
+  availability: string | null;
   contractType: string;
   education: string;
   skills: string[];
   experience: string;
   motivation: string;
-  cv?: string;
+  cv: string | null;
   portfolio?: string;
   whyUs: string;
   consent: boolean;
@@ -26,8 +26,16 @@ interface CandidateState {
   lang: string;
 }
 
+const loadCandidatesFromLocalStorage = (): Candidate[] => {
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('candidates');
+    return stored ? JSON.parse(stored) : [];
+  }
+  return [];
+};
+
 const initialState: CandidateState = {
-  list: [],
+  list: loadCandidatesFromLocalStorage(),
   selected: null,
   lang: 'en',
 };
@@ -38,18 +46,22 @@ const candidateSlice = createSlice({
   reducers: {
     addCandidate: (state, action: PayloadAction<Candidate>) => {
       state.list.push(action.payload);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('candidates', JSON.stringify(state.list));
+      }
     },
-    setCandidates: (state, action: PayloadAction<Candidate[]>) => {
-      state.list = action.payload;
-    },
-    setSelectedCandidate: (state, action: PayloadAction<Candidate | null>) => {
+    setSelectedCandidate: (state, action: PayloadAction<Candidate>) => {
       state.selected = action.payload;
     },
-    setLanguage: (state, action: PayloadAction<string>) => {
-      state.lang = action.payload;
+    
+    setCandidates: (state, action: PayloadAction<Candidate[]>) => {
+      state.list = action.payload;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('candidates', JSON.stringify(state.list));
+      }
     },
   },
 });
 
-export const { addCandidate, setCandidates, setSelectedCandidate, setLanguage } = candidateSlice.actions;
+export const { addCandidate, setSelectedCandidate, setCandidates } = candidateSlice.actions;
 export default candidateSlice.reducer;

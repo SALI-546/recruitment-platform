@@ -25,6 +25,7 @@ export default function CandidateForm() {
       cv: fileList.length > 0 ? fileList[0].name : null, 
       consent: values.consent || false, 
     };
+    
     dispatch(addCandidate(candidate));
     message.success(t('success'));
     form.resetFields();
@@ -90,7 +91,6 @@ export default function CandidateForm() {
             fileList={fileList}
             onChange={handleFileChange}
             beforeUpload={() => false} 
-            maxCount={1}
           >
             <Button icon={<UploadOutlined />}>{t('upload_cv')}</Button>
           </Upload>
