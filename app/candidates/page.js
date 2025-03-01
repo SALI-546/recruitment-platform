@@ -1,11 +1,11 @@
 'use client';
-import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { addCandidate, setCandidates } from '../../redux/candidateSlice';
+import { addCandidate } from '../../redux/candidateSlice';
 import { Form, Input, Button, DatePicker, Select, Checkbox, Upload, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'react-i18next'; // Utilisation de react-i18next
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 const { TextArea } = Input;
 
@@ -14,25 +14,26 @@ export default function CandidateForm() {
   const dispatch = useDispatch();
   const router = useRouter();
   const [form] = Form.useForm();
+  const [fileList, setFileList] = useState([]);
 
-  useEffect(() => {
-    fetch('/api/candidates')
-      .then((res) => res.json())
-      .then((data) => dispatch(setCandidates(data)));
-  }, [dispatch]);
-
-  const onFinish = async (values) => {
+  const onFinish = (values) => {
     const availability = values.availability ? values.availability.format('YYYY-MM-DD') : null;
-    const candidate = { id: Date.now().toString(), ...values, availability, cv: values.cv?.file.name || null };
-    await fetch('/api/candidates', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(candidate),
-    });
+    const candidate = {
+      id: Date.now().toString(),
+      ...values,
+      availability,
+      cv: fileList.length > 0 ? fileList[0].name : null, 
+      consent: values.consent || false, 
+    };
     dispatch(addCandidate(candidate));
     message.success(t('success'));
     form.resetFields();
+    setFileList([]);
     router.push('/recruiters/list');
+  };
+
+  const handleFileChange = ({ fileList }) => {
+    setFileList(fileList);
   };
 
   return (
@@ -58,18 +59,22 @@ export default function CandidateForm() {
           <DatePicker style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item label={t('contract_type')} name="contractType" rules={[{ required: true, message: t('required_field') }]}>
-          <Select options={[
-            { value: 'CDI', label: 'CDI' },
-            { value: 'CDD', label: 'CDD' },
-            { value: 'Freelance', label: 'Freelance' }
-          ]} />
+          <Select
+            options={[
+              { value: 'CDI', label: 'CDI' },
+              { value: 'CDD', label: 'CDD' },
+              { value: 'Freelance', label: 'Freelance' },
+            ]}
+          />
         </Form.Item>
         <Form.Item label={t('education')} name="education" rules={[{ required: true, message: t('required_field') }]}>
-          <Select options={[
-            { value: 'Bac', label: 'Bac' },
-            { value: 'Licence', label: 'Licence' },
-            { value: 'Master', label: 'Master' }
-          ]} />
+          <Select
+            options={[
+              { value: 'Bac', label: 'Bac' },
+              { value: 'Licence', label: 'Licence' },
+              { value: 'Master', label: 'Master' },
+            ]}
+          />
         </Form.Item>
         <Form.Item label={t('skills')} name="skills" rules={[{ required: true, message: t('required_field') }]}>
           <Checkbox.Group options={['JavaScript', 'React', 'Node.js', 'Python']} />
@@ -81,7 +86,14 @@ export default function CandidateForm() {
           <TextArea rows={4} />
         </Form.Item>
         <Form.Item label={t('upload_cv')} name="cv" rules={[{ required: true, message: t('required_field') }]}>
-          <Upload maxCount={1}><Button icon={<UploadOutlined />}>{t('upload_cv')}</Button></Upload>
+          <Upload
+            fileList={fileList}
+            onChange={handleFileChange}
+            beforeUpload={() => false} 
+            maxCount={1}
+          >
+            <Button icon={<UploadOutlined />}>{t('upload_cv')}</Button>
+          </Upload>
         </Form.Item>
         <Form.Item label={t('portfolio')} name="portfolio">
           <Input />

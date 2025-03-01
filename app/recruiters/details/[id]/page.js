@@ -1,46 +1,50 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedCandidate } from '../../../../redux/candidateSlice';
+
+import { useSelector, useDispatch } from 'react-redux';
+import { setCandidates, setSelectedCandidate } from '../../../../redux/candidateSlice';
 import { Descriptions, Button, message } from 'antd';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
+const loadStateFromLocalStorage = () => {
+  try {
+    const serializedState = localStorage.getItem('candidates');
+    if (serializedState === null) {
+      return [];
+    }
+    return JSON.parse(serializedState);
+  } catch (err) {
+    console.error('Error loading state from localStorage:', err);
+    return [];
+  }
+};
 
 export default function CandidateDetails({ params }) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const router = useRouter();
-  const candidate = useSelector((state) => state.candidates.selected);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [candidate, setCandidate] = useState(null);
 
   useEffect(() => {
-    const fetchCandidateDetails = async () => {
-      try {
-        const res = await fetch('/api/candidates');
-        if (!res.ok) {
-          throw new Error(`Failed to fetch candidates: ${res.status}`);
-        }
-        const data = await res.json();
-        const selected = data.find((c) => c.id === params.id);
-        if (!selected) {
-          throw new Error('Candidate not found');
-        }
+    const fetchCandidateData = async () => {
+      const savedCandidates = loadStateFromLocalStorage();
+      dispatch(setCandidates(savedCandidates));
+
+      // Utilisez React.use() pour attendre que params.id soit disponible
+      const candidateId = await params.id; // Assurez-vous que params.id est résolu avant de l'utiliser
+      const selected = savedCandidates.find((c) => c.id === candidateId);
+      if (selected) {
         dispatch(setSelectedCandidate(selected));
-        setLoading(false);
-      } catch (err) {
-        console.error('Error fetching candidate details:', err);
-        setError(err.message);
-        setLoading(false);
-        message.error(t('error_fetching_details'));
+        setCandidate(selected); // Mettre à jour l'état avec le candidat sélectionné
+      } else {
+        message.error(t('candidate_not_found'));
       }
     };
 
-    fetchCandidateDetails();
-  }, [dispatch, params.id, t]);
+    fetchCandidateData(); // Appeler la fonction asynchrone
+  }, [dispatch, params, t]); // Ajout de params pour garantir que les mises à jour sont prises en compte
 
-  if (loading) return <p>{t('loading')}</p>;
-  if (error) return <p>{t('error')}: {error}</p>;
   if (!candidate) return <p>{t('candidate_not_found')}</p>;
 
   return (

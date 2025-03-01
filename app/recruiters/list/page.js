@@ -1,20 +1,32 @@
 'use client';
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { setCandidates } from '../../../redux/candidateSlice';
 import { Table } from 'antd';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
+import { useEffect } from 'react';
 
-export default function CandidateList() {
+const loadStateFromLocalStorage = () => {
+  try {
+    const serializedState = localStorage.getItem('candidates');
+    if (serializedState === null) {
+      return [];
+    }
+    return JSON.parse(serializedState);
+  } catch (err) {
+    console.error('Error loading state from localStorage:', err);
+    return [];
+  }
+};
+
+export default function CandidateList() {      
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const candidates = useSelector((state) => state.candidates.list);
 
   useEffect(() => {
-    fetch('/api/candidates')
-      .then((res) => res.json())
-      .then((data) => dispatch(setCandidates(data)));
+    const savedCandidates = loadStateFromLocalStorage();
+    dispatch(setCandidates(savedCandidates));
   }, [dispatch]);
 
   const columns = [
